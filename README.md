@@ -10,11 +10,16 @@ python3 -m http.server 4173
 
 Then open http://localhost:4173.
 
-## Adding photos
+## Adding photos and your résumé (no tools needed)
 
-Drop images into `assets/photos/` using these exact names. Each slot shows a dashed placeholder until its file exists. JPGs about 1600px wide work best.
+The site is live at https://anir2212.github.io and is served from this GitHub repo. Uploading a file through the GitHub website updates the live site in about a minute.
 
-| File | Where it shows |
+1. Go to https://github.com/anir2212/anir2212.github.io and open the `assets` folder.
+2. For photos, open the `photos` folder and use **Add file → Upload files**. For the résumé, upload straight into `assets`.
+3. Rename each file **before** uploading so it matches a name below exactly: lowercase and ending in `.jpg`.
+4. Click **Commit changes**. Wait about a minute, then refresh the site.
+
+| File (in `assets/photos/`) | Where it shows |
 |---|---|
 | `easyboard-1.jpg` | EasyBoard: team photo |
 | `easyboard-2.jpg` | EasyBoard: user trials with the Down Syndrome Association |
@@ -22,16 +27,20 @@ Drop images into `assets/photos/` using these exact names. Each slot shows a das
 | `unicon-1.jpg` (large) · `unicon-2.jpg` · `unicon-3.jpg` | UNICON 2026 |
 | `jakarta-1.jpg` (large) · `jakarta-2.jpg` · `jakarta-3.jpg` | NUS Enterprise Winter Programme, Jakarta |
 | `rusa-1.jpg` (large) · `rusa-2.jpg` · `rusa-3.jpg` | Ridge View RC, Rusa House |
+| `assets/Anirudh_Mothiki_Resume.pdf` | Résumé buttons. They stay hidden until this file exists. |
 
-The caption on each slot comes from its `data-label` in `index.html`.
+Tips:
+- **iPhone photos (HEIC):** open in Preview → File → Export → JPEG. Around 1600px wide (Tools → Adjust Size) keeps the site fast.
+- **Large slots:** the "(large)" slot is a tall frame on desktop, so pick a portrait or well-centred shot. The other slots are landscape (4:3), and photos are cropped to fit.
+- **Captions:** each slot's caption comes from its `data-label` in `index.html`. To change one, open `index.html` on GitHub, click the pencil icon, edit the text, and commit.
+- **Replacing a photo:** upload a new file with the same name. If your browser still shows the old one, do a hard refresh (Cmd+Shift+R).
+- **Leaving slots empty:** an empty slot shows only its caption in a dashed frame. To remove a slot completely, delete its `<figure class="photo" …>` line in `index.html`.
 
-ScreenExplain demo video: put a phone screen recording at `assets/video/screenexplain.mp4`. To convert a `.mov`:
+**From your Mac instead** (if you'd rather use git): copy files into `~/Desktop/Projects/portfolio/assets/photos/`, then run
 
 ```bash
-ffmpeg -i input.mov -vf "scale=720:-2" -c:v libx264 -crf 26 -preset slow -pix_fmt yuv420p -movflags +faststart -an assets/video/screenexplain.mp4
+cd ~/Desktop/Projects/portfolio && git add -A && git commit -m "Add photos" && git push
 ```
-
-Résumé: put the PDF at `assets/Anirudh_Mothiki_Resume.pdf`.
 
 ## Project screenshots (optional)
 
