@@ -57,41 +57,59 @@
     io.observe(el);
   });
 
-  /* ── Photo / video slots ─────────────────────────────────
-     <figure class="photo" data-src="assets/photos/x.jpg" data-label="…">
-     Shows the image if the file exists, otherwise a labelled placeholder. */
-  const DEV = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-  const PH_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-8 8"/></svg>';
-  $$('.photo[data-src]').forEach((fig) => {
-    const src = fig.dataset.src;
-    const label = fig.dataset.label || '';
-    const isVideo = fig.dataset.kind === 'video';
-    const empty = () => {
-      fig.classList.add('empty');
-      // The file path is a hint for local editing only; visitors just see the caption.
-      const hint = DEV ? `<code>${esc(src)}</code>` : '';
-      fig.innerHTML = `<div class="ph">${PH_ICON}<b>${esc(label)}</b>${hint}</div>`;
-    };
-    if (isVideo) {
-      const v = document.createElement('video');
-      Object.assign(v, { src, controls: true, muted: true, playsInline: true, preload: 'metadata' });
-      v.setAttribute('aria-label', label);
-      v.addEventListener('error', empty, { once: true });
-      v.addEventListener('loadedmetadata', () => fig.appendChild(v), { once: true });
-      v.load();
-      return;
-    }
-    // Detached images ignore loading="lazy", so start each load as the slot nears the viewport.
-    const load = () => {
+  /* ── Photo galleries ─────────────────────────────────────
+     <div class="pgal" data-prefix="rusa"> shows assets/photos/rusa-1.jpg, rusa-2.jpg, … (up to 12).
+     Missing numbers are skipped, and the layout follows the number of photos found.
+     If none exist, the gallery is removed entirely. Optional data-captions="one|two|three". */
+  $$('.pgal').forEach((g) => {
+    const prefix = g.dataset.prefix;
+    const alt = g.dataset.alt || prefix;
+    const caps = (g.dataset.captions || '').split('|');
+    const load = (n) => new Promise((res) => {
       const img = new Image();
-      img.alt = label;
       img.decoding = 'async';
-      img.onload = () => { fig.classList.remove('empty'); fig.replaceChildren(img); };
-      img.onerror = empty;
-      img.src = src;
-    };
-    const near = new IntersectionObserver(([e]) => { if (e.isIntersecting) { near.disconnect(); load(); } }, { rootMargin: '800px 0px' });
-    near.observe(fig);
+      img.onload = () => res({ n, img });
+      img.onerror = () => res(null);
+      img.src = `assets/photos/${prefix}-${n}.jpg`;
+    });
+    Promise.all(Array.from({ length: 12 }, (_, i) => load(i + 1))).then((all) => {
+      const found = all.filter(Boolean);
+      if (!found.length) { g.remove(); return; }
+      g.dataset.count = Math.min(found.length, 6);
+      g.innerHTML = found.map(({ n, img }, i) => {
+        const cap = caps[n - 1] || '';
+        const ratio = (img.naturalWidth / img.naturalHeight).toFixed(3);
+        return `<figure style="--r:${ratio}"><button type="button" class="pgal-open" data-i="${i}" aria-label="Enlarge photo ${i + 1} of ${found.length}${cap ? ': ' + esc(cap) : ''}">
+          <img src="${img.src}" alt="${esc(cap || `${alt}, photo ${i + 1}`)}" width="${img.naturalWidth}" height="${img.naturalHeight}" loading="lazy"></button>${cap ? `<figcaption>${esc(cap)}</figcaption>` : ''}</figure>`;
+      }).join('');
+      g.__photos = found.map(({ n, img }) => ({ src: img.src, cap: caps[n - 1] || '', alt: caps[n - 1] || `${alt}, photo ${n}` }));
+    });
+  });
+
+  // Lightbox
+  const lb = document.createElement('dialog');
+  lb.className = 'lightbox';
+  lb.setAttribute('aria-label', 'Photo viewer');
+  lb.innerHTML = '<button type="button" class="lb-close" aria-label="Close">✕</button><button type="button" class="lb-nav prev" aria-label="Previous photo">←</button><figure><img alt=""><figcaption></figcaption></figure><button type="button" class="lb-nav next" aria-label="Next photo">→</button>';
+  document.body.appendChild(lb);
+  let lbSet = [], lbAt = 0;
+  const lbShow = (i) => {
+    lbAt = (i + lbSet.length) % lbSet.length;
+    const p = lbSet[lbAt];
+    $('img', lb).src = p.src; $('img', lb).alt = p.alt;
+    $('figcaption', lb).textContent = p.cap;
+    lb.classList.toggle('single', lbSet.length < 2);
+  };
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.pgal-open');
+    if (b) { lbSet = b.closest('.pgal').__photos || []; lbShow(+b.dataset.i); lb.showModal(); return; }
+    if (e.target === lb || e.target.closest('.lb-close')) lb.close();
+    const nav = e.target.closest('.lb-nav');
+    if (nav) lbShow(lbAt + (nav.classList.contains('next') ? 1 : -1));
+  });
+  lb.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') lbShow(lbAt + 1);
+    if (e.key === 'ArrowLeft') lbShow(lbAt - 1);
   });
 
   /* ═════════════════════════════════════════════════════════

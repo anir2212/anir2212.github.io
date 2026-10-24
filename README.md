@@ -19,22 +19,23 @@ The site is live at https://anir2212.github.io and is served from this GitHub re
 3. Rename each file **before** uploading so it matches a name below exactly: lowercase and ending in `.jpg`.
 4. Click **Commit changes**. Wait about a minute, then refresh the site.
 
-| File (in `assets/photos/`) | Where it shows |
+The galleries adapt to however many photos exist: 1, 2, 3 or up to 6 per section, in a layout that keeps each photo's shape. A section with no photos hides its gallery. Missing numbers are fine (for example `jakarta-1` and `jakarta-3` only).
+
+| File names (in `assets/photos/`) | Section |
 |---|---|
-| `easyboard-1.jpg` | EasyBoard: team photo |
-| `easyboard-2.jpg` | EasyBoard: user trials with the Down Syndrome Association |
-| `easyboard-3.jpg` | EasyBoard: award or pitch day |
-| `unicon-1.jpg` (large) · `unicon-2.jpg` · `unicon-3.jpg` | UNICON 2026 |
-| `jakarta-1.jpg` (large) · `jakarta-2.jpg` · `jakarta-3.jpg` | NUS Enterprise Winter Programme, Jakarta |
-| `rusa-1.jpg` (large) · `rusa-2.jpg` · `rusa-3.jpg` | Ridge View RC, Rusa House |
+| `easyboard-1.jpg`, `easyboard-2.jpg`, … | EasyBoard |
+| `unicon-1.jpg`, `unicon-2.jpg`, … | UNICON 2026 |
+| `jakarta-1.jpg`, `jakarta-2.jpg`, … | Jakarta Winter Programme |
+| `rusa-1.jpg`, `rusa-2.jpg`, … | Rusa House |
 | `assets/Anirudh_Mothiki_Resume.pdf` | Résumé buttons. They stay hidden until this file exists. |
+
+Visitors can click any photo to enlarge it and flip through with the arrow keys.
 
 Tips:
 - **iPhone photos (HEIC):** open in Preview → File → Export → JPEG. Around 1600px wide (Tools → Adjust Size) keeps the site fast.
-- **Large slots:** the "(large)" slot is a tall frame on desktop, so pick a portrait or well-centred shot. The other slots are landscape (4:3), and photos are cropped to fit.
-- **Captions:** each slot's caption comes from its `data-label` in `index.html`. To change one, open `index.html` on GitHub, click the pencil icon, edit the text, and commit.
+- **Shapes:** portrait, landscape or square all work. Nothing is cropped.
+- **Captions (optional):** in `index.html`, each gallery has an optional `data-captions="first|second|third"`, in photo-number order. Edit it on GitHub with the pencil icon, then commit.
 - **Replacing a photo:** upload a new file with the same name. If your browser still shows the old one, do a hard refresh (Cmd+Shift+R).
-- **Leaving slots empty:** an empty slot shows only its caption in a dashed frame. To remove a slot completely, delete its `<figure class="photo" …>` line in `index.html`.
 
 **From your Mac instead** (if you'd rather use git): copy files into `~/Desktop/Projects/portfolio/assets/photos/`, then run
 
